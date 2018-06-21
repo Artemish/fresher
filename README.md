@@ -14,15 +14,22 @@ decreases the freshness, and distributes the freshness among other songs.
 ### Commands
 
 * 'dv' - Downvote
-...Demotes the current song, indicating you'd like to hear it less
+
+   Demotes the current song, indicating you'd like to hear it less
+
 * 'uv' - Upvote
-...Promotes the current song, indicating you'd like to hear it more
+
+   Promotes the current song, indicating you'd like to hear it more
+
 * 're' - Repopulate
-...Looks into your music directory for any new music files, and assigns new
-...files a freshness of 100.
+
+   Looks into your music directory for any new music files, and assigns new
+   files a freshness of 100.
+
 * 'n' - next
-...Randomly samples the songs in your library according to their freshness,
-...decreases its freshness a bit, then returns the song title
+
+   Randomly samples the songs in your library according to their freshness,
+   decreases its freshness a bit, then returns the song title
 
 ### Design goals
 
