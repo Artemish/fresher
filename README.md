@@ -35,5 +35,5 @@ decreases the freshness, and distributes the freshness among other songs.
 
 I'm not sure whether keeping freshness constant is a worthy design goal, but
 I'll try it and see how it goes. Every operation affecting the freshness of a
-song will either distribute (in the case of lost freshness) or take from (in
-the case of gained freshness) all other songs. 
+song will either distribute freshness to (in the case of lost freshness) or
+take freshness from (in the case of gained freshness) all other songs. 
