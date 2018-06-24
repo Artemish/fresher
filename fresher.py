@@ -2,6 +2,7 @@
 import os
 import re
 import json
+import argparse
 
 FRESHER_DIR=os.path.expanduser("~")+"/.fresher"
 FRESHER_CACHE=f"{FRESHER_DIR}/cache.json"
@@ -35,6 +36,8 @@ def read_data():
     with open(FRESHER_CACHE, 'r') as f:
         song_scores = json.load(f)
 
+    return song_scores
+
 def load_data():
     if not os.path.exists(FRESHER_DIR):
         os.mkdir(FRESHER_DIR)
@@ -51,4 +54,16 @@ def main():
     print(song_scores)
 
 if __name__ == "__main__":
-    main()
+    global args
+    global parser
+
+    parser = argparse.ArgumentParser(description='Fresher - freshen your music library')
+    parser.add_argument('command', metavar='command', type=str, help='What to do')
+    args = parser.parse_args()
+
+    if args.command == "show":
+        main()
+    elif args.command == "update":
+        pass
+    else:
+        pass
