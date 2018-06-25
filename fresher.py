@@ -20,22 +20,21 @@ def now_playing():
     return sh.cv('info').strip()
 
 def weighted_sample(song_scores):
-    # Flip k,v for sorting
-    values = list(map(lambda kv: (kv[1], kv[0]), song_scores.items()))
-    total_score = sum(map(lambda vk: vk[0], values))
+    values = song_scores.items()
+    total_score = sum(map(lambda kv: kv[1], values))
 
-    in_order = sorted(values)
+    in_order = sorted(values, key=lambda kv: kv[1])
     val = random.randint(0, total_score - 1)
 
     i = 0
-    while val > in_order[i][0]:
-        val -= in_order[i][0]
+    while val > in_order[i][1]:
+        val -= in_order[i][1]
         i += 1
 
     # postcondition: val <= in_order[i]
 
     # return the key, i.e. the song title
-    return in_order[i][1]
+    return in_order[i][0]
 
 def populate_scores(music_dir = MUSIC_DIRECTORY):
     exploration_queue = [MUSIC_DIRECTORY]
