@@ -12,6 +12,8 @@ FRESHER_CACHE=f"{FRESHER_DIR}/cache.json"
 MUSIC_DIRECTORY = "/home/mitch/Music"
 MUSIC_REGEX = "(.+)\.(mp3|ogg|opus|m4a|mp4)$"
 
+BASE_SCORE=100
+
 def populate_scores(music_dir = MUSIC_DIRECTORY):
     exploration_queue = [MUSIC_DIRECTORY]
     song_scores = {}
@@ -24,7 +26,7 @@ def populate_scores(music_dir = MUSIC_DIRECTORY):
                 m = re.match(MUSIC_REGEX, fname)
                 if m is not None:
                   title = m.groups()[0]
-                  song_scores[title] = 0
+                  song_scores[title] = BASE_SCORE
                 elif os.path.isdir(abs_path):
                   exploration_queue.append(abs_path)
     
