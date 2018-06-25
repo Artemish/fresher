@@ -51,8 +51,36 @@ def load_data():
     else:
         return read_data()
 
+def selection_prompt(song_titles):
+    for i in range(len(song_titles)):
+        print(f"\t[{i}] " + song_titles[i])
+    selection = input("Selection: ")
+    return song_titles[int(selection)]
+
+def find_by_title(title, song_scores):
+    all_titles = song_scores.keys()
+    matching_titles = list(filter(lambda t: title.lower() in t.lower(), all_titles))
+
+    if len(matching_titles) == 1:
+        return matching_titles[0]
+    elif len(matching_titles) > 1:
+        return selection_prompt(matching_titles)
+    else:
+        raise RuntimeError(f"No song matching '{title}' was found.")
+
+def handle_upvote(args):
+    song_scores = load_data()
+    update(args.title, args.score, song_scores)
+
+def handle_downvote(args):
+    song_scores = load_data()
+    update(args.title, -1 * args.score, song_scores)
+
 def update(title, adjustment, song_scores):
-    pass
+    full_title = find_by_title(title, song_scores)
+    song_scores[full_title] += adjustment
+    write_data(song_scores)
+    print(f"Adjusted '{full_title}' by {adjustment} points.")
 
 def get_parser(): 
     parser = argparse.ArgumentParser()
@@ -69,11 +97,15 @@ def get_parser():
 
     # Upvote command
     upvote_parser = subparsers.add_parser('upvote', help='Upvote the currently playing song')
-    upvote_parser.add_argument('score', action='store', help='How much to increase the song score')
+    upvote_parser.add_argument('title', action='store', type=str, help='Title of the song to upvote')
+    upvote_parser.add_argument('score', action='store', type=int, default=10, help='How much to increase the song score')
+    upvote_parser.set_defaults(func=handle_upvote)
 
     # Upvote command
-    downvote_parser = subparsers.add_parser('dv', help='Downvote the currently playing song')
-    downvote_parser.add_argument('score', action='store', help='How much to decrease the song score')
+    downvote_parser = subparsers.add_parser('downvote', help='Downvote the currently playing song')
+    downvote_parser.add_argument('title', action='store', type=str, help='Title of the song to downvote')
+    downvote_parser.add_argument('score', action='store', type=int, default=10, help='How much to decrease the song score')
+    downvote_parser.set_defaults(func=handle_downvote)
 
     return parser
 
