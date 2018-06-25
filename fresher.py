@@ -55,7 +55,7 @@ def load_data():
 
 def selection_prompt(song_titles):
     for i in range(len(song_titles)):
-        print(f"\t[{i}] " + song_titles[i])
+        print(f"[{i}] " + song_titles[i])
     selection = input("Selection: ")
     return song_titles[int(selection)]
 
