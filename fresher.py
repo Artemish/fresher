@@ -6,6 +6,7 @@ import argparse
 import pprint
 import collections
 import sh
+import random
 
 FRESHER_DIR=os.path.expanduser("~")+"/.fresher"
 FRESHER_CACHE=f"{FRESHER_DIR}/cache.json"
@@ -17,6 +18,24 @@ BASE_SCORE=100
 
 def now_playing():
     return sh.cv('info').strip()
+
+def weighted_sample(song_scores):
+    # Flip k,v for sorting
+    values = list(map(lambda kv: (kv[1], kv[0]), song_scores.items()))
+    total_score = sum(map(lambda vk: vk[0], values))
+
+    in_order = sorted(values)
+    val = random.randint(0, total_score - 1)
+
+    i = 0
+    while val > in_order[i][0]:
+        val -= in_order[i][0]
+        i += 1
+
+    # postcondition: val <= in_order[i]
+
+    # return the key, i.e. the song title
+    return in_order[i][1]
 
 def populate_scores(music_dir = MUSIC_DIRECTORY):
     exploration_queue = [MUSIC_DIRECTORY]
@@ -107,6 +126,10 @@ def get_parser():
     repopulate_parser = subparsers.add_parser('repopulate', help='Repopulate and reset the score dictionary')
     repopulate_parser.set_defaults(func=handle_repopulate)
 
+    # Next command
+    next_parser = subparsers.add_parser('next', help='Samples the list of songs and suggests a new one')
+    next_parser.set_defaults(func=handle_next)
+
     # Upvote command
     upvote_parser = subparsers.add_parser('upvote', help='Upvote the currently playing song')
     upvote_parser.add_argument('--title', action='store', type=str, help='Title of the song to upvote')
@@ -124,6 +147,10 @@ def get_parser():
 def handle_show(args):
     song_scores = load_data()
     pprint.pprint(song_scores)
+
+def handle_next(args):
+    song_scores = load_data()
+    print(weighted_sample(song_scores))
 
 def handle_repopulate(args):
     scores = load_data()
