@@ -3,6 +3,7 @@ import os
 import re
 import json
 import argparse
+import pprint
 
 FRESHER_DIR=os.path.expanduser("~")+"/.fresher"
 FRESHER_CACHE=f"{FRESHER_DIR}/cache.json"
@@ -49,20 +50,18 @@ def load_data():
     else:
         return read_data()
 
-def main():
-    song_scores = load_data()
-    print(song_scores)
+def update(title, adjustment, song_scores):
+    pass
 
 if __name__ == "__main__":
-    global args
-    global parser
-
     parser = argparse.ArgumentParser(description='Fresher - freshen your music library')
     parser.add_argument('command', metavar='command', type=str, help='What to do')
     args = parser.parse_args()
+    
+    song_scores = load_data()
 
     if args.command == "show":
-        main()
+        pprint.pprint(song_scores)
     elif args.command == "update":
         pass
     else:
