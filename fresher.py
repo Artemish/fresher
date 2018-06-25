@@ -4,6 +4,7 @@ import re
 import json
 import argparse
 import pprint
+import collections
 
 FRESHER_DIR=os.path.expanduser("~")+"/.fresher"
 FRESHER_CACHE=f"{FRESHER_DIR}/cache.json"
@@ -11,7 +12,7 @@ FRESHER_CACHE=f"{FRESHER_DIR}/cache.json"
 MUSIC_DIRECTORY = "/home/mitch/Music"
 MUSIC_REGEX = "(.+)\.(mp3|ogg|opus|m4a|mp4)$"
 
-def populate_scores(music_dir):
+def populate_scores(music_dir = MUSIC_DIRECTORY):
     exploration_queue = [MUSIC_DIRECTORY]
     song_scores = {}
 
@@ -44,7 +45,7 @@ def load_data():
         os.mkdir(FRESHER_DIR)
 
     if not os.path.exists(FRESHER_CACHE):
-        song_scores = populate_scores(MUSIC_DIRECTORY)
+        song_scores = populate_scores()
         write_data(song_scores)
         return song_scores
     else:
@@ -53,16 +54,56 @@ def load_data():
 def update(title, adjustment, song_scores):
     pass
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Fresher - freshen your music library')
-    parser.add_argument('command', metavar='command', type=str, help='What to do')
-    args = parser.parse_args()
-    
-    song_scores = load_data()
+def get_parser(): 
+    parser = argparse.ArgumentParser()
 
-    if args.command == "show":
-        pprint.pprint(song_scores)
-    elif args.command == "update":
-        pass
-    else:
-        pass
+    subparsers = parser.add_subparsers(help='commands')
+
+    # Show command
+    show_parser = subparsers.add_parser('show', help='Dump the score dictionary')
+    show_parser.set_defaults(func=handle_show)
+
+    # Repopulate command
+    repopulate_parser = subparsers.add_parser('repopulate', help='Repopulate and reset the score dictionary')
+    repopulate_parser.set_defaults(func=handle_repopulate)
+
+    # Upvote command
+    upvote_parser = subparsers.add_parser('upvote', help='Upvote the currently playing song')
+    upvote_parser.add_argument('score', action='store', help='How much to increase the song score')
+
+    # Upvote command
+    downvote_parser = subparsers.add_parser('dv', help='Downvote the currently playing song')
+    downvote_parser.add_argument('score', action='store', help='How much to decrease the song score')
+
+    return parser
+
+def handle_show(args):
+    song_scores = load_data()
+    pprint.pprint(song_scores)
+
+def handle_repopulate(args):
+    scores = load_data()
+    new_scores = populate_scores()
+
+    songs = set(scores.keys())
+    new_songs = set(new_scores.keys())
+
+    for song in (new_songs - songs):
+        print(f"Registering {song}.")
+        scores[song] = new_scores[song]
+
+    for song in (songs - new_songs):
+        print(f"Deregistering {song}.")
+        del scores[song]
+
+    write_data(scores)
+
+    print("Repopulated the score data")
+
+if __name__ == "__main__":
+    global args
+    parser = get_parser()
+
+    args = parser.parse_args()
+
+    args.func(args)
