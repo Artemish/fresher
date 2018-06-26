@@ -1,0 +1,71 @@
+#!/bin/bash
+
+API_BASE="org.mpris.MediaPlayer2.Player"
+TARGET="org.mpris.MediaPlayer2.vlc"
+OBJ_PATH="/org/mpris/MediaPlayer2"
+MUSIC_DIR="/home/mitch/Music"
+
+urldecode() {
+    python -c "import sys, urllib as ul; print(ul.unquote_plus('${1}'))"
+}
+
+usage() {
+    echo "Usage: cv (n)ext - Plays next song"
+    echo "          (i)nfo - Info about the current song"
+    echo "          (p)rev - Plays previous song"
+    echo "          (f)ind - Finds song by substring and plays"
+    exit 0
+}
+
+vlc_cmd() {
+  case "$#" in
+    1) dbus-send --type=method_call --dest=${TARGET} "${OBJ_PATH}" "${API_BASE}.${1}";;
+    2) dbus-send --type=method_call --dest=${TARGET} "${OBJ_PATH}" "${API_BASE}.${1}" "${2}";; 
+  esac
+}
+
+play_song() {
+    f="$(find "${MUSIC_DIR}" -iname "*${1}*" | head -1)"
+    fname=$(basename "$f")
+    notify-send "Now playing:" "${fname%.*}"
+    uri="file://${f}"
+    vlc_cmd OpenUri "string:${uri}"
+}
+
+unset GREP_OPTIONS # guh
+
+playback_status() {
+  dbus-send --print-reply "--dest=${TARGET}" "${OBJ_PATH}" \
+    org.freedesktop.DBus.Properties.GetAll "string:${API_BASE}" | \
+    grep -A 1 PlaybackStatus | awk '/variant/ { print $3 }' | tr -d '"'
+}
+
+now_playing() {
+  f=$(dbus-send --print-reply "--dest=${TARGET}" "${OBJ_PATH}" \
+    org.freedesktop.DBus.Properties.GetAll "string:${API_BASE}" | \
+    grep -A 1 'xesam' | grep 'file://' | grep -E -o '/[^/][^"]+')
+
+  fname=$(urldecode "${f}")
+  name=$(basename "${fname%.*}")
+
+  if [ "$#" -eq 0 ] || [ "$1" != "quiet" ]; then
+    notify-send "Now playing:" "${name}"
+  fi
+
+  echo "${name}"
+}
+
+case $1 in
+  "-h"*) usage;;
+  "np") now_playing;;
+  "i"*) now_playing quiet;;
+  "n"*) vlc_cmd Next;;
+  "p"*) vlc_cmd Previous;;
+  "f"*) play_song "$2";;
+  "s"*) play_song "$(fresher next)";;
+  *) 
+    case $(playback_status) in
+      "Playing") vlc_cmd Pause;;
+      "Paused") vlc_cmd Play;;
+    esac;;
+esac
