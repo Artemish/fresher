@@ -10,10 +10,11 @@ urldecode() {
 }
 
 usage() {
-    echo "Usage: cv (n)ext - Plays next song"
-    echo "          (i)nfo - Info about the current song"
+    echo "Usage: cv (np) - Sends a notification containing the current song"
+    echo "          (i)nfo - Prints info about the current song to stdout"
     echo "          (p)rev - Plays previous song"
     echo "          (f)ind - Finds song by substring and plays"
+    echo "          (s)ample - Queries the Fresher service to play another song"
     exit 0
 }
 
