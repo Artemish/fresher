@@ -11,25 +11,22 @@ Fresher will populate a data store with all of the song titles contained in a
 given directory, and assign each song a score of 100. As you listen to a song, it
 decreases the freshness, and distributes the freshness among other songs.
 
-### Commands
+### Usage
 
-* 'dv' - Downvote
-
-   Demotes the current song, indicating you'd like to hear it less
-
-* 'uv' - Upvote
-
-   Promotes the current song, indicating you'd like to hear it more
-
-* 're' - Repopulate
-
-   Looks into your music directory for any new music files, and assigns new
-   files a freshness of 100.
-
-* 'n' - next
-
-   Randomly samples the songs in your library according to their freshness,
-   decreases its freshness a bit, then returns the song title
+ > user@shell$ ./fresher.py --help
+ > usage: fresher.py [-h] {show,repopulate,next,upvote,downvote} ...
+ > 
+ > positional arguments:
+ >   {show,repopulate,next,upvote,downvote}
+ >                         commands
+ >     show                Dump the score dictionary
+ >     repopulate          Repopulate and reset the score dictionary
+ >     next                Samples the list of songs and suggests a new one
+ >     upvote              Upvote the currently playing song
+ >     downvote            Downvote the currently playing song
+ > 
+ > optional arguments:
+ >   -h, --help            show this help message and exit
 
 ### Design goals
 
