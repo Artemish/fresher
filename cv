@@ -28,9 +28,10 @@ vlc_cmd() {
 play_song() {
     f="$(find "${MUSIC_DIR}" -iname "*${1}*" | head -1)"
     fname=$(basename "$f")
-    notify-send "Now playing:" "${fname%.*}"
     uri="file://${f}"
     vlc_cmd OpenUri "string:${uri}"
+
+    now_playing
 }
 
 unset GREP_OPTIONS # guh
@@ -50,7 +51,8 @@ now_playing() {
   name=$(basename "${fname%.*}")
 
   if [ "$#" -eq 0 ] || [ "$1" != "quiet" ]; then
-    notify-send "Now playing:" "${name}"
+    score=$(fresher show --title "${name}")
+    notify-send "Now playing:" "${name} [${score}]"
   fi
 
   echo "${name}"

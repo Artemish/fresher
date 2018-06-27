@@ -119,6 +119,7 @@ def get_parser():
 
     # Show command
     show_parser = subparsers.add_parser('show', help='Dump the score dictionary')
+    show_parser.add_argument('--title', action='store', type=str, help='Title of the song you want the score for')
     show_parser.set_defaults(func=handle_show)
 
     # Repopulate command
@@ -145,7 +146,16 @@ def get_parser():
 
 def handle_show(args):
     song_scores = load_data()
-    pprint.pprint(song_scores)
+
+    if args.title is not None:
+        print(get_score(args.title, song_scores))
+    else:
+        pprint.pprint(song_scores)
+
+def get_score(title, song_scores):
+    real_title = find_by_title(title, song_scores)
+    return song_scores[real_title]
+
 
 def handle_next(args):
     song_scores = load_data()
