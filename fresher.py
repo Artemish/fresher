@@ -43,14 +43,14 @@ def populate_scores(music_dir = MUSIC_DIRECTORY):
     while len(exploration_queue) != 0:
         d = exploration_queue.pop()
         for fname in os.listdir(d):
-            abs_path = f"{MUSIC_DIRECTORY}/{fname}"
+            abs_path = f"{d}/{fname}"
             if os.path.isfile(abs_path):
                 m = re.match(MUSIC_REGEX, fname)
                 if m is not None:
                   title = m.groups()[0]
                   song_scores[title] = BASE_SCORE
-                elif os.path.isdir(abs_path):
-                  exploration_queue.append(abs_path)
+            elif os.path.isdir(abs_path):
+              exploration_queue.append(abs_path)
     
     return song_scores
 
