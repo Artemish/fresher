@@ -6,7 +6,7 @@ OBJ_PATH="/org/mpris/MediaPlayer2"
 MUSIC_DIR="/home/mitch/Music"
 
 urldecode() {
-    python -c "import sys, urllib as ul; print(ul.unquote_plus('${1}'))"
+    python -c "import sys, urllib.parse as p; print(p.unquote_plus('${1}'))"
 }
 
 usage() {
