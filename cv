@@ -31,6 +31,8 @@ play_song() {
     uri="file://${f}"
     vlc_cmd OpenUri "string:${uri}"
 
+    sleep 0.05 # zzz
+
     now_playing
 }
 
