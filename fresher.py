@@ -8,7 +8,7 @@ import collections
 import sh
 import random
 
-FRESHER_DIR=os.path.expanduser("~")+"/.fresher"
+FRESHER_DIR=os.path.expanduser("~")+"/.cache/fresher"
 FRESHER_CACHE=f"{FRESHER_DIR}/cache.json"
 
 MUSIC_DIRECTORY = "/home/mitch/Music"
