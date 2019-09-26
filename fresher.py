@@ -11,7 +11,7 @@ import random
 FRESHER_DIR=os.path.expanduser("~")+"/.cache/fresher"
 FRESHER_CACHE=f"{FRESHER_DIR}/cache.json"
 
-MUSIC_DIRECTORY = "/home/mitch/Music"
+MUSIC_DIRECTORY = os.path.expanduser("~")+"/Music"
 MUSIC_REGEX = "(.+)\.(mp3|ogg|opus|m4a|mp4)$"
 
 BASE_SCORE=100
