@@ -48,6 +48,10 @@ playback_status() {
     grep -A 1 PlaybackStatus | awk '/variant/ { print $3 }' | tr -d '"'
 }
 
+escape_chars() { 
+  echo "${*}" | sed 's/&/&amp;/g'
+}
+
 now_playing() {
   f=$(dbus-send --print-reply "--dest=${TARGET}" "${OBJ_PATH}" \
     org.freedesktop.DBus.Properties.GetAll "string:${API_BASE}" | \
@@ -58,7 +62,8 @@ now_playing() {
 
   if [ "$#" -eq 0 ] || [ "$1" != "quiet" ]; then
     score=$(fresher show --title "${name}")
-    notify-send "Now playing:" "${name} [${score}]"
+    msg="$(escape_chars ${name}) [${score}]"
+    notify-send "Now playing:" "$msg"
   fi
 
   echo "${name}"
