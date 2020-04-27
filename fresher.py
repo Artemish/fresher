@@ -75,12 +75,6 @@ def load_data():
     else:
         return read_data()
 
-def selection_prompt(song_titles):
-    for i in range(len(song_titles)):
-        print(f"[{i}] " + song_titles[i])
-    selection = input("Selection: ")
-    return song_titles[int(selection)]
-
 def find_by_title(title, song_scores):
     all_titles = song_scores.keys()
     matching_titles = list(filter(lambda t: title.lower() in t.lower(), all_titles))
@@ -88,7 +82,7 @@ def find_by_title(title, song_scores):
     if len(matching_titles) == 1:
         return matching_titles[0]
     elif len(matching_titles) > 1:
-        return selection_prompt(matching_titles)
+        return sorted(matching_titles, key=len)[0]
     else:
         raise RuntimeError(f"No song matching '{title}' was found.")
 
