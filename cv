@@ -59,20 +59,25 @@ now_playing() {
 
   fname=$(urldecode "${f}")
   name=$(basename "${fname%.*}")
+  score=$(fresher show --title "${name}")
 
-  if [ "$#" -eq 0 ] || [ "$1" != "quiet" ]; then
-    score=$(fresher show --title "${name}")
+  if [ "$#" -eq 1 ] && [ "$1" == "notif" ]; then
     msg="$(escape_chars ${name}) [${score}]"
     notify-send "Now playing:" "$msg"
   fi
 
-  echo "${name}"
+  if [ "$#" -eq 0 ] || [ "$1" != "title" ]; then
+    echo "${name} [${score}]"
+  else
+    echo "${name}"
+  fi
 }
 
 case $1 in
   "-h"*) usage;;
-  "np") now_playing;;
-  "i"*) now_playing quiet;;
+  "np") now_playing notif;;
+  "i"*) now_playing;;
+  "t"*) now_playing title;;
   "n"*) vlc_cmd Next;;
   "p"*) vlc_cmd Previous;;
   "f"*) play_song "$2";;

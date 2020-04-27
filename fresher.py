@@ -17,7 +17,7 @@ MUSIC_REGEX = "(.+)\.(mp3|ogg|opus|m4a|mp4)$"
 BASE_SCORE=100
 
 def now_playing():
-    return sh.cv('info').strip()
+    return sh.cv('title').strip()
 
 def weighted_sample(song_scores):
     values = song_scores.items()
