@@ -57,6 +57,10 @@ now_playing() {
     org.freedesktop.DBus.Properties.GetAll "string:${API_BASE}" | \
     grep -A 1 'xesam' | grep 'file://' | grep -E -o '/[^/][^"]+')
 
+  if [ "${f}x" = "x" ]; then
+    return
+  fi
+
   fname=$(urldecode "${f}")
   name=$(basename "${fname%.*}")
   score=$(fresher show --title "${name}")
