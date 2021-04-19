@@ -29,8 +29,12 @@ vlc_cmd() {
   esac
 }
 
+sort_by_length() {
+  cat - | awk '{ print length, $0 }' | sort -n -s | cut -d" " -f2-
+}
+
 play_song() {
-    f="$(find "${MUSIC_DIR}" -iname "*${1}*" | head -1)"
+  f="$(find "${MUSIC_DIR}" -iname "*${1}*" | sort_by_length | head -n 1)"
     fname=$(basename "$f")
     uri="file://${f}"
     vlc_cmd OpenUri "string:${uri}"
