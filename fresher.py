@@ -100,9 +100,21 @@ def handle_downvote(args):
     else:
         update(args.title, -1 * args.score, song_scores)
 
+def handle_archive(args):
+    song_scores = load_data()
+    if args.title is None:
+        update(now_playing(), -10000, song_scores)
+    else:
+        update(args.title, -10000, song_scores)
+
 def update(title, adjustment, song_scores):
     full_title = find_by_title(title, song_scores)
-    song_scores[full_title] += adjustment
+
+    if (adjustment + song_scores[full_title] < 0):
+        song_scores[full_title] = 0
+    else: 
+        song_scores[full_title] += adjustment
+
     write_data(song_scores)
     print(f"Adjusted '{full_title}' by {adjustment} points.")
 
@@ -135,6 +147,11 @@ def get_parser():
     downvote_parser.add_argument('--title', action='store', type=str, help='Title of the song to downvote')
     downvote_parser.add_argument('--score', action='store', type=int, default=10, help='How much to decrease the song score')
     downvote_parser.set_defaults(func=handle_downvote)
+
+    # Archive command
+    downvote_parser = subparsers.add_parser('archive', help='Set the currently playing song\'s score to 0')
+    downvote_parser.add_argument('--title', action='store', type=str, help='Title of the song to archive')
+    downvote_parser.set_defaults(func=handle_archive)
 
     return parser
 
