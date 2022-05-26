@@ -17,7 +17,17 @@ MUSIC_REGEX = "(.+)\.(mp3|ogg|opus|m4a|mp4|flac)$"
 BASE_SCORE=100
 
 def now_playing():
-    return sh.cv('title').strip()
+    META_FILE_REGEX=re.compile(b"xesam:url.+file://(.+)")
+    ### Grab the URLEncoded file path from the 'playerctl meta' command
+    command = sh.playerctl('metadata')
+
+    from urllib.parse import unquote
+
+    encoded_filepath = META_FILE_REGEX.search(command.stdout).groups()[0]
+    filepath = unquote(encoded_filepath)
+    filename = filepath.split('/')[-1]
+
+    return '.'.join(filename.split('.')[:-1])
 
 def weighted_sample(song_scores):
     values = song_scores.items()
