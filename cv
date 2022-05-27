@@ -8,7 +8,7 @@ MUSIC_DIR="/home/mitch/Music"
 urldecode() {
     PROG="""
 import sys, urllib.parse as p
-print(p.unquote_plus(sys.stdin.readline().strip()))
+print(p.unquote(sys.stdin.readline().strip()))
 """
     echo "${1}" | python3.6 -c "${PROG}"
 }
@@ -33,15 +33,22 @@ sort_by_length() {
   cat - | awk '{ print length, $0 }' | sort -n -s | cut -d" " -f2-
 }
 
+find_song() { 
+  escaped=$(echo "${1}" | sed 's_\(\[\|\]\)_\\\1_g') # send help
+  find "${MUSIC_DIR}" -iname "*${escaped}*" | \
+    sort_by_length | \
+    head -n 1
+}
+
 play_song() {
-  f="$(find "${MUSIC_DIR}" -iname "*${1}*" | sort_by_length | head -n 1)"
-    fname=$(basename "$f")
-    uri="file://${f}"
-    vlc_cmd OpenUri "string:${uri}"
+  f=$(find_song "${1}")
+  fname=$(basename "$f")
+  uri="file://${f}"
+  vlc_cmd OpenUri "string:${uri}"
 
-    sleep 0.05 # zzz
+  sleep 0.05 # zzz
 
-    now_playing
+  now_playing
 }
 
 unset GREP_OPTIONS # guh
@@ -89,7 +96,7 @@ case $1 in
   "n"*) vlc_cmd Next;;
   "p"*) vlc_cmd Previous;;
   "f"*) play_song "$2";;
-  "s"*) play_song "$(fresher next)";;
+  "s"*) C="$(fresher next)"; play_song "${C}" ;;
   *) 
     case $(playback_status) in
       "Playing") vlc_cmd Pause;;
